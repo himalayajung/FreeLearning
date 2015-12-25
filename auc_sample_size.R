@@ -93,7 +93,7 @@ for (sample_size in c(seq(20, 734, 10), 100)){
 
   print(paste0("Finished in ", Sys.time()-strt))
   
-  save(collect_iterations,file=paste0(FOLDER , 'fit_ ', sample_size, '.Rdata'))
+  save(collect_iterations, file=paste0(FOLDER , 'fit_ ', sample_size, '.Rdata'))
   print(paste0("AUC=",mean(AUC)))
   df_AUC = rbind(df_AUC, data.frame(AUC_mean = mean(unlist(collect_AUC)), AUC_sd = sd(unlist(collect_AUC))))
 }
