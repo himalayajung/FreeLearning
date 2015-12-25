@@ -2,6 +2,12 @@
 
 # -*- coding: utf-8 -*-
 """
+
+TO DO:
+1) clean 
+2) make the code more modular
+----
+
 Created on Sat May  9 16:25:50 2015
 
 @author: gajendrakatuwal
@@ -251,7 +257,7 @@ if args.feature_selection:
 
 if args.classification:
     logger.info("%s used for classification ......" % args.classification)
-    
+
 if args.regression:
     logger.info("%s used for regression on ADOS score ......." % args.regression)
            
@@ -269,12 +275,13 @@ else:
         attributes = ['_volume', '_area', '_thickness$', '_thicknessstd', '_foldind', '_meancurv', '_gauscurv', 'ALL']
     else:
         pass
-#%% Settings
+
+# Settings
 np.random.seed(args.seed)
 
-#%% Data
+# Data
 data = pd.read_csv(os.path.join('..', 'data', args.data_file), index_col=0)
-logger.info(data.columns[:10])
+logger.info(data.columns[:10])  # for sanity check
 
 if args.match_type:
     if args.AS:
@@ -302,13 +309,12 @@ if args.match_type:
     logger.info("Mean: age, VIQ, AS = {}".format(avg))
     logger.info("Std.: age, VIQ, AS = {}".format(sd))
 
-    # print(data.head(20).iloc[:, :10])
-    # print(data.tail(20).iloc[:, :10])
     # sys.exit(0)
 else:
     if args.sex:
         logger.info('Subjects with sex = {} selected'.format(args.sex))
         data = data[data['sex'] == args.sex]
+
     if args.age:
         logger.info('Subjects with age >= {} and age <= {} are present in the selected interval'.format(args.age[0], args.age[1]))
         data = data[(data['age'] >= args.age[0]) & (data['age'] <= args.age[1])]
@@ -423,12 +429,12 @@ for attribute in attributes:
             attribute_columns = filter(lambda x: re.search(attribute, x), data.columns)
             X = data[attribute_columns]
 
-    features = X.columns       
+    features = X.columns      
     # X = X.values       
     y = yy.values
            
     # Remove highly correlated features 
-    if args.remove_correlated < 1:   
+    if args.remove_correlated < 1:
         logger.info("Highly correlatd features with correlation coefficient >= {} will be removed".format(args.remove_correlated))        
         X = remove_highly_correlated(X, threshold=args.remove_correlated)
     logger.info('X shape is {}'.format(X.shape))
@@ -719,13 +725,11 @@ for attribute in attributes:
                 ExtraTreesClassifier(n_estimators=2000, n_jobs=-1, criterion='gini', max_depth=7),
                 ExtraTreesClassifier(n_estimators=2000, n_jobs=-1, criterion='entropy', max_depth=15),
                 ExtraTreesClassifier(n_estimators=2000, n_jobs=-1, criterion='gini', max_depth=20),
-                ExtraTreesClassifier(n_estimators=2000, n_jobs=-1, criterion='gini', max_depth=25),
-                ExtraTreesClassifier(n_estimators=2000, n_jobs=-1, criterion='gini', max_depth=30),
                 GradientBoostingClassifier(n_estimators=2000, loss='deviance',learning_rate=0.01, subsample=0.5, max_depth=3),
                 
 
                 # Creating train and test sets for blending 
-                skf1 = list(StratifiedKFold(y_train,  n_folds = 5, shuffle = True, random_state = np.random.seed(0)))
+                skf1 = list(StratifiedKFold(y_train,  n_folds=5, shuffle=True, random_state = np.random.seed(0)))
 
                 dataset_blend_train = np.zeros((X_train.shape[0], len(clfs)))
                 dataset_blend_test = np.zeros((X_test.shape[0], len(clfs)))
